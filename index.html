@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>منصة الاختبارات التفاعلية</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --correct: #22c55e;
+      --wrong: #ef4444;
+      --border-color: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Tajawal', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 15px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 600px;
+      background-color: var(--card-bg);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border-color);
+    }
+
+    .hidden { display: none !important; }
+
+    .app-header {
+      text-align: center;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .app-header h1 {
+      font-size: 1.5rem;
+      color: var(--text-main);
+    }
+
+    .status-box {
+      text-align: center;
+      padding: 30px 10px;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid var(--border-color);
+      border-bottom-color: var(--accent);
+      border-radius: 50%;
+      display: inline-block;
+      animation: rotation 1s linear infinite;
+      margin-bottom: 15px;
+    }
+
+    @keyframes rotation {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .section-title {
+      font-size: 1.1rem;
+      margin-bottom: 15px;
+      color: var(--text-muted);
+      text-align: right;
+    }
+
+    .vertical-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .list-item-btn {
+      background: var(--bg-color);
+      border: 1px solid var(--border-color);
+      padding: 16px 18px;
+      border-radius: 12px;
+      text-align: right;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--text-main);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .list-item-btn:hover {
+      border-color: var(--accent);
+      background: rgba(59, 130, 246, 0.1);
+    }
+
+    .list-item-btn::after {
+      content: '←';
+      font-size: 1.2rem;
+      color: var(--accent);
+    }
+
+    .btn-back {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      background-color: #334155;
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+
+    .quiz-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .question-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .option-btn {
+      padding: 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-color);
+      color: var(--text-main);
+      text-align: right;
+      cursor: pointer;
+      font-size: 0.98rem;
+    }
+
+    .option-btn.correct { border-color: var(--correct); background: rgba(34, 197, 94, 0.2); }
+    .option-btn.wrong { border-color: var(--wrong); background: rgba(239, 68, 68, 0.2); }
+
+    .explanation-box {
+      background: rgba(255, 255, 255, 0.05);
+      border-right: 4px solid var(--accent);
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .btn-action {
+      width: 100%;
+      padding: 14px;
+      border-radius: 10px;
+      border: none;
+      background-color: var(--accent);
+      color: white;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .score-circle {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 5px solid var(--accent);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 2rem;
+      font-weight: 800;
+      margin: 20px auto;
+      color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <div class="app-header">
+      <h1>منصة الاختبارات التفاعلية</h1>
+    </div>
+
+    <!-- Loading -->
+    <div id="screen-loading" class="status-box">
+      <span class="spinner"></span>
+      <h2>جاري تحميل المواد...</h2>
+    </div>
+
+    <!-- Error -->
+    <div id="screen-error" class="status-box hidden">
+      <h2 style="color: var(--wrong);">خطأ في التحميل!</h2>
+      <p id="error-message" style="margin: 15px 0; color: var(--text-muted);"></p>
+      <button class="btn-action" onclick="fetchQuestionsData()">إعادة المحاولة</button>
+    </div>
+
+    <!-- Courses & Lectures Selector -->
+    <div id="screen-selector" class="hidden">
+      <div class="section-title" id="selector-title">المواد المتاحة:</div>
+      <div id="selector-list" class="vertical-list"></div>
+      <button id="btn-back-selector" class="btn-back hidden" onclick="renderCourses()">الرجوع للمواد</button>
+    </div>
+
+    <!-- Quiz Screen -->
+    <div id="screen-quiz" class="hidden">
+      <div class="quiz-header">
+        <span id="quiz-lecture-name">المحاضرة</span>
+        <span id="quiz-progress">سؤال 1</span>
+      </div>
+      <div class="question-title" id="question-text"></div>
+      <div class="options-list" id="options-container"></div>
+      <div class="explanation-box hidden" id="explanation-container">
+        <strong>التوضيح:</strong> <span id="explanation-text"></span>
+      </div>
+      <button class="btn-action hidden" id="btn-next-question" onclick="nextQuestion()">السؤال التالي</button>
+    </div>
+
+    <!-- Results Screen -->
+    <div id="screen-results" class="hidden" style="text-align: center;">
+      <h2>اكتمل الاختبار!</h2>
+      <div class="score-circle" id="score-display">0%</div>
+      <p id="score-details" style="color: var(--text-muted); margin-bottom: 20px;"></p>
+      <button class="btn-action" onclick="showScreen('screen-selector')">اختيار اختبار آخر</button>
+    </div>
+
+  </div>
+
+  <script>
+    // =========================================================
+    // ضع رابط الـ RAW الخاص بملف الأسئلة من GitHub بين التنصيصين أسفله:
+    // =========================================================
+    const JSON_URL = "https://raw.githubusercontent.com/username/Exam-site/main/questions.json";
+
+
+    let appData = null;
+    let currentCourse = null;
+    let currentLecture = null;
+    let currentQuestionIndex = 0;
+    let selectedOptionIndex = null;
+    let score = 0;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      fetchQuestionsData();
+    });
+
+    function showScreen(screenId) {
+      const screens = ['screen-loading', 'screen-error', 'screen-selector', 'screen-quiz', 'screen-results'];
+      screens.forEach(id => {
+        document.getElementById(id).classList.add('hidden');
+      });
+      document.getElementById(screenId).classList.remove('hidden');
+    }
+
+    async function fetchQuestionsData() {
+      if (!JSON_URL || JSON_URL === "ضع_رابط_الـ_RAW_هنا") {
+        document.getElementById('error-message').innerText = 'يرجى وضع رابط الـ Raw الخاص بك داخل متغير JSON_URL في الكود.';
+        showScreen('screen-error');
+        return;
+      }
+
+      showScreen('screen-loading');
+
+      try {
+        const response = await fetch(JSON_URL);
+        if (!response.ok) {
+          throw new Error(`تعذر جلب الملف (كود الخطأ: ${response.status})`);
+        }
+        appData = await response.json();
+        renderCourses();
+        showScreen('screen-selector');
+      } catch (err) {
+        document.getElementById('error-message').innerText = 'فشل تحميل الأسئلة. تأكد من صحة رابط الـ Raw وأن ملف الأسئلة تنسيقه صحيح.';
+        showScreen('screen-error');
+      }
+    }
+
+    function renderCourses() {
+      document.getElementById('selector-title').innerText = "المواد المتاحة:";
+      document.getElementById('btn-back-selector').classList.add('hidden');
+      const list = document.getElementById('selector-list');
+      list.innerHTML = '';
+
+      appData.courses.forEach((course, index) => {
+        const btn = document.createElement('div');
+        btn.className = 'list-item-btn';
+        btn.innerText = course.name;
+        btn.onclick = () => renderLectures(index);
+        list.appendChild(btn);
+      });
+    }
+
+    function renderLectures(courseIndex) {
+      currentCourse = appData.courses[courseIndex];
+      document.getElementById('selector-title').innerText = `محاضرات (${currentCourse.name}):`;
+      document.getElementById('btn-back-selector').classList.remove('hidden');
+      const list = document.getElementById('selector-list');
+      list.innerHTML = '';
+
+      currentCourse.lectures.forEach((lecture, index) => {
+        const btn = document.createElement('div');
+        btn.className = 'list-item-btn';
+        btn.innerText = lecture.title;
+        btn.onclick = () => startQuiz(index);
+        list.appendChild(btn);
+      });
+    }
+
+    function startQuiz(lectureIndex) {
+      currentLecture = currentCourse.lectures[lectureIndex];
+      currentQuestionIndex = 0;
+      score = 0;
+      showScreen('screen-quiz');
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      selectedOptionIndex = null;
+      const q = currentLecture.questions[currentQuestionIndex];
+      
+      document.getElementById('quiz-lecture-name').innerText = currentLecture.title;
+      document.getElementById('quiz-progress').innerText = `سؤال ${currentQuestionIndex + 1} من ${currentLecture.questions.length}`;
+      document.getElementById('question-text').innerText = q.question;
+      document.getElementById('explanation-container').classList.add('hidden');
+      document.getElementById('btn-next-question').classList.add('hidden');
+
+      const optionsContainer = document.getElementById('options-container');
+      optionsContainer.innerHTML = '';
+
+      q.options.forEach((optText, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerText = optText;
+        btn.onclick = () => selectOption(idx);
+        optionsContainer.appendChild(btn);
+      });
+    }
+
+    function selectOption(index) {
+      if (selectedOptionIndex !== null) return;
+      selectedOptionIndex = index;
+
+      const q = currentLecture.questions[currentQuestionIndex];
+      const buttons = document.querySelectorAll('.option-btn');
+
+      if (index === q.correct) {
+        buttons[index].classList.add('correct');
+        score++;
+      } else {
+        buttons[index].classList.add('wrong');
+        buttons[q.correct].classList.add('correct');
+      }
+
+      if (q.explanation) {
+        document.getElementById('explanation-text').innerText = q.explanation;
+        document.getElementById('explanation-container').classList.remove('hidden');
+      }
+
+      document.getElementById('btn-next-question').classList.remove('hidden');
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < currentLecture.questions.length) {
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+      showScreen('screen-results');
+      const total = currentLecture.questions.length;
+      const percentage = Math.round((score / total) * 100);
+
+      document.getElementById('score-display').innerText = `${percentage}%`;
+      document.getElementById('score-details').innerText = `أجبت على ${score} سؤال صحيح من أصل ${total}`;
+
+      if (percentage >= 80) {
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+      }
+    }
+  </script>
+</body>
+</html>
