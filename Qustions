@@ -1,31 +1,42 @@
 {
   "courses": [
     {
-      "name": "اسم المادة الأولى (مثال: Pharmacology)",
+      "name": "فارماكولوجي",
       "lectures": [
         {
-          "title": "المحاضرة الأولى: Introduction",
+          "title": "المحاضرة الأولى: مقدمة في الفارما",
           "questions": [
             {
-              "question": "نص السؤال الأول هنا؟",
+              "question": "ما هو العلم الذي يدرس أثر الدواء على الجسم؟",
               "options": [
-                "الخيار الأول",
-                "الخيار الثاني (الصحيح)",
-                "الخيار الثالث",
-                "الخيار الرابع"
-              ],
-              "correct": 1,
-              "explanation": "شرح اختياري يظهر بعد حل السؤال لتوضيح الإجابة."
-            },
-            {
-              "question": "نص السؤال الثاني هنا؟",
-              "options": [
-                "الخيار الأول",
-                "الخيار الثاني",
-                "الخيار الثالث"
+                "Pharmacodynamics",
+                "Pharmacokinetics",
+                "Toxicology",
+                "Pharmacy"
               ],
               "correct": 0,
-              "explanation": "توضيح الإجابة الصحيحة."
+              "explanation": "Pharmacodynamics يدرس تأثير الدواء على الجسم، بينما Pharmacokinetics يدرس تأثير الجسم على الدواء."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "كيمياء صيدلانية",
+      "lectures": [
+        {
+          "title": "المحاضرة الأولى: التركيب الكيميائي",
+          "questions": [
+            {
+              "question": "ما هي الرابطة الأقوى في تفاعل الدواء مع المستقبِلات؟",
+              "options": [
+                "Hydrogen bond",
+                "Covalent bond",
+                "Ionic bond",
+                "Van der Waals"
+              ],
+              "correct": 1,
+              "explanation": "الرابطة التساهمية Covalent bond هي الأقوى وغير عكسية Covalent (Irreversible)."
             }
           ]
         }
